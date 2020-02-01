@@ -1,0 +1,186 @@
+<script>
+function setup() {
+  createCanvas(800, 800);
+  angleMode(DEGREES);
+  rectMode(CENTER);
+  const ctx = drawingContext;
+  const x = width / 2;
+  const y = height / 2;
+  const squareSideDotsCount = 30;
+  stroke(0);
+  
+  const squareVertices = [];
+  let startAngle = 45;
+  for (let i = 0; i < 4; i += 1) {
+    squareVertices.push({
+      x: 400 * cos(startAngle),
+      y: 400 * sin(startAngle),
+    });
+    startAngle += 360 / 4;
+  }
+     
+  const square = [];
+  for (let i = 0; i < 4; i += 1) {
+    for (let j = 0; j < squareSideDotsCount; j += 1) {  
+      const x = lerp(
+        squareVertices[i].x,
+        squareVertices[(i + 1) % squareVertices.length].x,
+        j / squareSideDotsCount,
+      );
+      const y = lerp(
+        squareVertices[i].y,
+        squareVertices[(i + 1) % squareVertices.length].y,
+        j / squareSideDotsCount,
+      );
+      square.push({ x, y });
+    }
+  }
+  
+  push();
+  translate(x, y);
+   for (let i = 0; i < square.length; i += 1) {
+     push();
+     noStroke();
+     if (i % 2 === 0) {
+        fill(0);
+      } else {
+        fill(255);
+      }
+     beginShape();
+     vertex(square[i].x, square[i].y);
+     vertex(0, 0);
+     vertex(
+        square[(i + 1) % square.length].x,
+        square[(i + 1) % square.length].y,
+      );
+     endShape(CLOSE);
+     pop();
+   }
+  
+  const innerRectSide = 520;
+  const cellCount = 7;
+  const grid = [];
+  const pointCount = cellCount ** 2;
+  const cellSide = innerRectSide / cellCount;
+  const startPoint = -(cellSide * (cellCount - 1)) / 2;
+  for (let rowIndex = 0; rowIndex < cellCount; rowIndex += 1) {
+        for (let colIndex = 0; colIndex < cellCount; colIndex += 1) {
+            grid.push({
+              x: startPoint + colIndex * cellSide,
+              y: startPoint + rowIndex * cellSide,
+            });
+        }
+    }
+  
+  for (let rowIndex = 0; rowIndex < cellCount; rowIndex += 1) {
+        for (let colIndex = 0; colIndex < cellCount; colIndex += 1) {
+            const x = grid[rowIndex * cellCount + colIndex].x;
+            const y = grid[rowIndex * cellCount + colIndex].y;
+            const halfWidth = cellSide / 2;
+          
+          if (rowIndex % 2 === 1 && colIndex % 2 === 1) {
+            push();
+            fill(100);
+            rect(x, y, cellSide, cellSide)
+            pop();
+            
+            push();
+            fill(200);
+            rect(x + 5, y + 5, 25, 25);
+            pop();
+            
+            push();
+            fill(50);
+            rect(x, y, 25, 25);
+            pop();
+            
+            push();
+            fill(255);
+            rect(x, y, 2, 2);
+            pop();
+          } else {
+            noStroke();
+            push();
+            makeLinearGradient(
+              ctx,
+              x - halfWidth,
+              y - halfWidth,
+              x + halfWidth,
+              y - halfWidth,
+              [0, 1],
+              ['rgb(255, 0, 0)', 'rgb(255, 255, 255)'],
+            )
+            triangle(
+              x - halfWidth,
+              y - halfWidth,
+              x + halfWidth,
+              y - halfWidth,
+              x + halfWidth,
+              y + halfWidth,
+            );
+            pop();
+            
+            push();
+            fill('rgb(170, 57, 57)');
+            triangle(
+              x - halfWidth,
+              y - halfWidth,
+              x - halfWidth,
+              y + halfWidth,
+              x + halfWidth,
+              y + halfWidth,
+            );
+            pop();
+            
+            push();
+            fill(0);
+            circle(x, y, 30);
+            pop();
+            
+            push();
+            fill(150);
+            circle(x + 5, y + 5, 5);
+            pop();
+            
+            push();
+            fill(255);
+            circle(x, y, 3);
+            pop();
+            
+            push();
+            strokeWeight(2);
+            stroke(255);
+            line(x - halfWidth, y, x + halfWidth, y);
+            pop();
+            
+            push();
+            strokeWeight(2);
+            stroke(255);
+            line(x, y - halfWidth, x, y + halfWidth);
+            pop();
+          }
+        }  
+    }
+
+  pop();
+};
+
+const draw = () => {
+  console.log('asfdasf')
+}
+
+const makeLinearGradient = (
+  ctx,
+  x1,
+  y1,
+  x2,
+  y2,
+  colorStops,
+  colors,
+) => {
+  const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
+  colorStops.forEach((stop, i) => gradient.addColorStop(stop, colors[i]));
+  ctx.fillStyle = gradient;
+  return gradient;
+};
+</script>
